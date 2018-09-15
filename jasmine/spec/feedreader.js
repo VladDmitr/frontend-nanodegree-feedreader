@@ -41,7 +41,7 @@ $(function () {
             allFeeds.forEach(function (feed) {
                 expect(feed.name).toBeDefined();
                 for (let i in empty) {
-                    expect(feed.url).not.toBe(empty[i]);
+                    expect(feed.name).not.toBe(empty[i]);
                 }
             });
         });
@@ -83,7 +83,7 @@ $(function () {
          * Click on the menu
          */
         function clickOnMenu() {
-            $('.menu-icon-link').trigger('click');
+            $('.menu-icon-link').click();
         }
 
         /**

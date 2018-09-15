@@ -65,7 +65,7 @@ $(function () {
             expect(hasTargetClass).toEqual(true);
             clickOnMenu();
             hasTargetClass = checkTargetClass();
-            expect(hasTargetClass).toBe(false);
+            expect(hasTargetClass).toEqual(false);
             clickOnMenu();
             hasTargetClass = checkTargetClass();
             expect(hasTargetClass).toEqual(true);
@@ -95,14 +95,12 @@ $(function () {
             const matrix = $(el).css('transform').replace(/[^0-9\-.,]/g, '').split(',');
             const x = matrix[12] || matrix[4];
             const y = matrix[13] || matrix[5];
-            return [parseInt(x), parseInt(y)]
+            return [parseInt(x), parseInt(y)];
         }
     });
 
     describe('Initial Entries', function () {
-        beforeEach(function (done) {
-            loadFeed(0, done);
-        });
+        beforeEach(done => loadFeed(0, done));
 
         it('checking the feed container', function () {
             const entry = $('.feed .entry').length;

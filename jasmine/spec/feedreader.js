@@ -53,30 +53,30 @@ $(function () {
 
         /* This test checking the default state of the menu */
         it('checking the default state of the menu', function () {
-            const className = getBodyClass();
-            const transform = getTransform('.slide-menu');
-            expect(className).toEqual(menuHiddenClass);
+            let hasTargetClass = checkTargetClass();
+            let transform = getTransform('.slide-menu');
+            expect(hasTargetClass).toEqual(true);
             expect(transform).toContain(-192);
         });
 
         /* This test checking states of the menu by click */
         it('checking the states of the menu by click', function () {
-            let className = getBodyClass();
-            expect(className).toEqual(menuHiddenClass);
+            let hasTargetClass = checkTargetClass();
+            expect(hasTargetClass).toEqual(true);
             clickOnMenu();
-            className = getBodyClass();
-            expect(className).toBe('');
+            hasTargetClass = checkTargetClass();
+            expect(hasTargetClass).toBe(false);
             clickOnMenu();
-            className = getBodyClass();
-            expect(className).toEqual(menuHiddenClass);
+            hasTargetClass = checkTargetClass();
+            expect(hasTargetClass).toEqual(true);
         });
 
         /**
-         * Gets body class
-         * @returns {string}
+         * Check body class
+         * @returns {boolean}
          */
-        function getBodyClass() {
-            return $('body').attr('class');
+        function checkTargetClass() {
+            return $('body').hasClass(menuHiddenClass);
         }
 
         /**
@@ -101,39 +101,51 @@ $(function () {
 
     describe('Initial Entries', function () {
         beforeEach(function (done) {
-            loadFeed(0, function () {
-                done();
-            });
+            loadFeed(0, done);
         });
 
-        it('checking the feed container', function (done) {
+        it('checking the feed container', function () {
             const entry = $('.feed .entry').length;
             expect(entry).toBeGreaterThan(0);
-            done();
         });
     });
 
     describe('New Feed Selection', function () {
-        let feedNumber = 0;
+        let firstContent = null;
+        let secondContent = null;
+
         beforeEach(function (done) {
-            loadFeed(feedNumber, function () {
-                done();
+            // Load the first contents
+            loadFeed(0, function () {
+                firstContent = $('.feed').contents();
+                // Load the second contents
+                loadFeed(1, function () {
+                    secondContent = $('.feed').contents();
+                    done();
+                });
             });
         });
 
-        afterEach(function () {
-            feedNumber++;
-        });
+        it('checking feed`s content', function (done) {
+            let contentDiff = false;
+            if (firstContent.length !== secondContent.length) {
+                contentDiff = true;
+            }
 
-        it('checking the feed with index 0', function (done) {
-            const entryLink = $('.feed .entry-link').get(0);
-            expect($(entryLink).attr('href').indexOf('http://blog.udacity.com/')).not.toBe(-1);
-            done();
-        });
-
-        it('checking the feed with index 1', function (done) {
-            const entryLink = $('.feed .entry-link').get(0);
-            expect($(entryLink).attr('href').indexOf('https://css-tricks.com/')).not.toBe(-1);
+            if (contentDiff === false) {
+                let firstContentLinks = firstContent.filter('a');
+                let secondContentLinks = secondContent.filter('a');
+                let length = Math.min(firstContentLinks.length, secondContentLinks.length);
+                for (let i = 0; i < length; i++) {
+                    let firstLink = $(firstContentLinks[i]).attr('href');
+                    let secondLink = $(secondContentLinks[i]).attr('href');
+                    if (firstLink !== secondLink) {
+                        contentDiff = true;
+                        break;
+                    }
+                }
+            }
+            expect(contentDiff).toBe(true);
             done();
         });
     });
